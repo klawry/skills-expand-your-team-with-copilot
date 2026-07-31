@@ -187,7 +187,51 @@ section h3 {
   margin-top: auto;
   padding-top: 10px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.share-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.share-actions-label {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.share-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.share-button {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  flex: 1;
+  min-width: 90px;
+  padding: 6px 10px;
+}
+
+.share-button:hover {
+  background-color: #e8eaf6;
+}
+
+.shared-activity {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(83, 75, 174, 0.18);
+}
+
+.auth-notice {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-align: center;
 }
 
 /* Activity Tag */
@@ -271,7 +315,6 @@ section h3 {
 .register-button {
   background: linear-gradient(145deg, var(--secondary), var(--secondary-dark));
   color: var(--secondary-text);
-  margin-top: 10px;
   padding: 6px 12px;
   width: 100%;
   font-weight: bold;
@@ -285,6 +328,11 @@ section h3 {
   letter-spacing: 0.3px;
   text-transform: uppercase;
   border: none;
+}
+
+.register-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 button {
@@ -454,6 +502,28 @@ button {
 /* Hidden class - critical for showing/hiding elements */
 .hidden {
   display: none !important;
+}
+
+.message {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.message.success {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.message.error {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+
+.message.info {
+  background-color: var(--info-light);
+  color: var(--info);
 }
 
 /* More compact no-results message */

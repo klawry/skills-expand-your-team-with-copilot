@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("activity-search");
   const searchButton = document.getElementById("search-button");
   const categoryFilters = document.querySelectorAll(".category-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
 
@@ -37,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // State for activities and filters
   let allActivities = {};
   let currentFilter = "all";
+  let currentDifficulty = "";
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
@@ -64,6 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeTimeFilter) {
       currentTimeRange = activeTimeFilter.dataset.time;
     }
+
+    const activeDifficultyFilter = document.querySelector(
+      ".difficulty-filter.active"
+    );
+    if (activeDifficultyFilter) {
+      currentDifficulty = activeDifficultyFilter.dataset.difficulty;
+    }
   }
 
   // Function to set day filter
@@ -89,6 +98,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update active class
     timeFilters.forEach((btn) => {
       if (btn.dataset.time === timeRange) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    fetchActivities();
+  }
+
+  function setDifficultyFilter(difficulty) {
+    currentDifficulty = difficulty;
+
+    difficultyFilters.forEach((btn) => {
+      if (btn.dataset.difficulty === difficulty) {
         btn.classList.add("active");
       } else {
         btn.classList.remove("active");
@@ -392,6 +415,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      if (currentDifficulty) {
+        queryParams.push(`difficulty=${encodeURIComponent(currentDifficulty)}`);
+      }
+
       const queryString =
         queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
       const response = await fetch(`/activities${queryString}`);
@@ -435,6 +462,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!isWeekendActivity) {
           return;
         }
+      }
+
+      const normalizedDifficulty = details.difficulty
+        ? details.difficulty.toLowerCase()
+        : "";
+
+      if (currentDifficulty === "all-levels") {
+        if (normalizedDifficulty) {
+          return;
+        }
+      } else if (
+        currentDifficulty &&
+        normalizedDifficulty !== currentDifficulty
+      ) {
+        return;
       }
 
       // Apply search filter
@@ -506,6 +548,10 @@ document.addEventListener("DOMContentLoaded", () => {
       </span>
     `;
 
+    const difficultyTagHtml = details.difficulty
+      ? `<span class="difficulty-tag difficulty-${details.difficulty.toLowerCase()}">${details.difficulty}</span>`
+      : "";
+
     // Create capacity indicator
     const capacityIndicator = `
       <div class="capacity-container ${capacityStatusClass}">
@@ -521,6 +567,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     activityCard.innerHTML = `
       ${tagHtml}
+      ${difficultyTagHtml}
       <h4>${name}</h4>
       <p>${details.description}</p>
       <p class="tooltip">
@@ -612,6 +659,16 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update current filter and display filtered activities
       currentFilter = button.dataset.category;
       displayFilteredActivities();
+    });
+  });
+
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      difficultyFilters.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      currentDifficulty = button.dataset.difficulty;
+      fetchActivities();
     });
   });
 
@@ -859,6 +916,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.activityFilters = {
     setDayFilter,
     setTimeRangeFilter,
+    setDifficultyFilter,
   };
 
   // Initialize app
